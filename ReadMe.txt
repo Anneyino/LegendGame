@@ -1,8 +1,3 @@
-Student name: Jiatong Yin
-Email: jiatongy@bu.edu
-BU ID: U03718498
-
-
 Since the project is encapsulated in package LegendGames
 To run this project you should put the java files in a folder named LegendGames(For example, C:\Users\11327\Desktop\test\LegendGames)
 
