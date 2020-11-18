@@ -1,6 +1,8 @@
 package LegendGames;
 
 
+import java.util.List;
+
 public class UnitPlace {
 	private String name;
 	private int x_pos;
@@ -8,6 +10,10 @@ public class UnitPlace {
 	private String mark;
 	private boolean isAccessible;
 	private String type;
+	private Hero heroHere;
+	private Monster monsterHere;
+	private boolean hasHero;
+	private boolean hasMonster;
 	
 	public UnitPlace() {
 		this.setName("a unit place for legend");
@@ -94,4 +100,21 @@ public class UnitPlace {
 		return this.type;
 	}
 
+	@Override
+	public String toString() {
+		if(isAccessible){
+			return "xxx";
+		}
+		else{
+			String heroSide="   ";
+			String monsterSide="   ";
+			if(hasHero){
+				heroSide=" "+heroHere.getName();
+			}
+			if(hasMonster){
+				monsterSide=monsterHere.getName()+" ";
+			}
+			return heroSide+" "+monsterSide;
+		}
+	}
 }
