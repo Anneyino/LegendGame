@@ -288,14 +288,29 @@ public class Hero implements Cloneable{
 		this.attributes.put("Strength", currentStrength+inc);
 	}
 	
+	public void decStrength(double dec) {
+		double currentStrength = this.getAttributes().get("Strength");
+		this.attributes.put("Strength", currentStrength-dec);
+	}
+	
 	public void incDexterity(double inc) {
 		double currentDexterity = this.getAttributes().get("Dexterity");
 		this.attributes.put("Dexterity", currentDexterity+inc);
 	}
 	
+	public void decDexterity(double dec) {
+		double currentDexterity = this.getAttributes().get("Dexterity");
+		this.attributes.put("Dexterity", currentDexterity-dec);
+	}
+	
 	public void incAgility(double inc) {
 		double currentAgility = this.getAttributes().get("Agility");
 		this.attributes.put("Agility", currentAgility+inc);
+	}
+	
+	public void decAgility(double dec) {
+		double currentAgility = this.getAttributes().get("Agility");
+		this.attributes.put("Agility", currentAgility-dec);
 	}
 	
 	public Map<String,Double> getAttributes(){

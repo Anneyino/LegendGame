@@ -1,4 +1,5 @@
 package LegendGames;
+import Games.*;
 public abstract class RPGGame<T extends GeneralMap> extends Game{
 	
 	// maybe a class GeneralMap which is extended by LegendMap
