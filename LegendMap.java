@@ -283,8 +283,9 @@ public class LegendMap extends GeneralMap{
 		StringBuilder ans= new StringBuilder();
 		for (UnitPlace[] unitPlaces : currentMap) {
 			for (int j = 0; j < currentMap[0].length; j++) {
-				String type = String.valueOf(unitPlaces[j].getType().charAt(0));
-				ans.append(type).append(" - ").append(type).append(" - ").append(type).append("  ");
+				// String type = String.valueOf(unitPlaces[j].getType().charAt(0));
+				String mark = unitPlaces[j].getMark();
+				ans.append(mark).append(" - ").append(mark).append(" - ").append(mark).append("  ");
 			}
 			ans.append("\n");
 			for (int j = 0; j < currentMap[0].length; j++) {
@@ -292,8 +293,9 @@ public class LegendMap extends GeneralMap{
 			}
 			ans.append("\n");
 			for (int j = 0; j < currentMap[0].length; j++) {
-				String type = String.valueOf(unitPlaces[j].getType().charAt(0));
-				ans.append(type).append(" - ").append(type).append(" - ").append(type).append("  ");
+				// String type = String.valueOf(unitPlaces[j].getType().charAt(0));
+				String mark = unitPlaces[j].getMark();
+				ans.append(mark).append(" - ").append(mark).append(" - ").append(mark).append("  ");
 			}
 			ans.append("\n\n");
 		}
