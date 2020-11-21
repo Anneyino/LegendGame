@@ -1,6 +1,7 @@
 package LegendGames;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Random;
 
@@ -277,4 +278,25 @@ public class LegendMap extends GeneralMap{
 		System.out.println("");
 	}
 
+	@Override
+	public String toString() {
+		StringBuilder ans= new StringBuilder();
+		for (UnitPlace[] unitPlaces : currentMap) {
+			for (int j = 0; j < currentMap[0].length; j++) {
+				String type = String.valueOf(unitPlaces[j].getType().charAt(0));
+				ans.append(type).append(" - ").append(type).append(" - ").append(type).append("  ");
+			}
+			ans.append("\n");
+			for (int j = 0; j < currentMap[0].length; j++) {
+				ans.append("|").append(unitPlaces[j]).append("|");
+			}
+			ans.append("\n");
+			for (int j = 0; j < currentMap[0].length; j++) {
+				String type = String.valueOf(unitPlaces[j].getType().charAt(0));
+				ans.append(type).append(" - ").append(type).append(" - ").append(type).append("  ");
+			}
+			ans.append("\n\n");
+		}
+		return String.valueOf(ans);
+	}
 }
