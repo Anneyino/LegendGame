@@ -20,6 +20,7 @@ public class UnitPlace {
 		this.setXPos(0);
 		this.setYPos(0);
 		this.setMark("D");//default
+		this.setIsAccessible(true);
 		this.setType("UnitPlace");
 	}
 	
@@ -99,10 +100,42 @@ public class UnitPlace {
 	public String getType() {
 		return this.type;
 	}
+	
+	public void setHeroHere(Hero h) {
+		this.heroHere = h;
+	}
+	
+	public Hero getHeroHere() {
+		return this.heroHere;
+	}
+	
+	public void setMonsterHere(Monster m) {
+		this.monsterHere = m;
+	}
+	
+	public Monster getMonsterHere() {
+		return this.monsterHere;
+	}
+	
+	public void setHasHero(boolean flag) {
+		this.hasHero = flag;
+	}
+	
+	public boolean getHasHero() {
+		return this.hasHero;
+	}
+	
+	public void setHasMonster(boolean flag) {
+		this.hasMonster = flag;
+	}
+	
+	public boolean getHasMonster() {
+		return this.hasMonster;
+	}
 
 	@Override
 	public String toString() {
-		if(isAccessible){
+		if(!isAccessible){
 			return "xxx";
 		}
 		else{

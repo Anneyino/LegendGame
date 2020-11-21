@@ -726,6 +726,10 @@ public class LegendGame extends RPGGame<LegendMap>{
 		}
 		
 	}
+	// this method define new game mode for Legend Game II
+	public void MobaGameControl() {
+		
+	}
 	
 	public void DIYMap() {
 		Scanner sc = new Scanner(System.in);

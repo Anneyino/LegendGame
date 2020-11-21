@@ -12,16 +12,29 @@ public class LegendMap extends GeneralMap{
     //mapWidth  with respect to x, we create the UnitPlace[width][length], that is UnitPlace[x][y]
 	private int[] HeroPosition;
 	
+	private int laneWidth; // the width of a lane, default is 2
+	private boolean isMobaMode; // to decide whether the map is moba or not
+	private List<Hero> herolist; // the heroes in moba legend game.
+	
 	public LegendMap() {
 		super("LegendMap",8,8);
 		
 		this.initRandomMap();
 	}
 	
+	// this method to generate basic Legend Map
 	public LegendMap(int width,int length) {
         super("LegendMap",width,length);
-		
+		this.setIsMoba(false);
 		this.initRandomMap();
+	}
+	// this method to generate Moba Legend Map
+	public LegendMap(int laneWid,int width,List<Hero> heroes) {
+		super("Moba LegendMap",width,laneWid*3+2);
+		this.setLaneWidth(laneWid);
+		this.setIsMoba(true);
+		this.setHeroList(heroes);
+		this.initRandomMobaMap();
 	}
 	
 	// init random map and set the hero position to (0,0)
@@ -34,8 +47,7 @@ public class LegendMap extends GeneralMap{
 		Double commonCellDouble = mapSize*0.5;
 		int commonCellNum = commonCellDouble.intValue();
 		
-		int nonAccessNum = mapSize - marketNum - commonCellNum;
-		
+		int nonAccessNum = mapSize - marketNum - commonCellNum; 
 		List<UnitPlace> unitList = new ArrayList<UnitPlace>();
 		
 		for(int i=0;i<marketNum;i++) {
@@ -69,6 +81,88 @@ public class LegendMap extends GeneralMap{
 		this.setCurrentMap(randomMap);
 	}
 	
+	// init random Moba Map for Legend Game II
+	public void initRandomMobaMap() {
+		
+		int randomSize = 3*this.laneWidth*(this.getMapWidth()-2); // get the size we need to randomly assign for the moba map
+		
+		Double BlushSize = randomSize*0.2;
+		int BlushNum = BlushSize.intValue();
+		Double CaveSize = randomSize*0.2;
+		int CaveNum = CaveSize.intValue();
+		Double KoulouSize = randomSize*0.2;
+		int KoulouNum = KoulouSize.intValue();
+		
+		int PlainNum = randomSize - BlushNum - CaveNum - KoulouNum;
+		
+		List<UnitPlace> cellList = new ArrayList<UnitPlace>();
+		
+		for(int i = 0; i<BlushNum;i++) {
+			cellList.add(new BlushCell());
+		}
+		
+		for(int i = 0; i<CaveNum;i++) {
+			cellList.add(new CaveCell());
+		}
+		
+		for(int i = 0; i<KoulouNum;i++) {
+			cellList.add(new KoulouCell());
+		}
+		
+		for(int i = 0; i<PlainNum; i++) {
+			cellList.add(new PlainCell());
+		}
+		
+		// shuffle the map
+		exchange(cellList);
+		
+		int Xwidth = this.getMapWidth();
+		int Ylength = this.getMapLength();		
+		UnitPlace[][] randomMobaMap = new UnitPlace[Xwidth][Ylength];
+		// assign different cells to map
+		for(int i=0;i<Xwidth;i++) {
+			// assign the first row and last row
+			if(i==0||i==Xwidth-1) {
+				for(int j=0;j<Ylength;j++) {
+					// assign inaccessible cells
+					if(j==this.getLaneWidth()||j==2*this.getLaneWidth()+1) {
+						randomMobaMap[i][j] = new NonAccessPlace();
+					}else {
+						// if the first line, then assign monster nexus cell
+						if(i==0) {
+							randomMobaMap[i][j] = new NexusCell(false);
+						}else {
+							// if the last line, then assign hero nexus cell
+							for(int k = 0;k<3;k++) {
+								if(j==k*(this.laneWidth+1)) {
+									randomMobaMap[i][j] = new NexusCell(this.getHeroList().get(k));// assign kth hero to this nexus cell
+									break;
+								}else {
+									randomMobaMap[i][j] = new NexusCell(true);// assign general hero base(not a rebirth point)
+								}
+							}
+						}
+					}
+				}
+			}else {
+				// assign other rows
+				for(int j = 0; j<Ylength;j++) {
+					if(j==this.getLaneWidth()||j==2*this.getLaneWidth()+1) {
+						randomMobaMap[i][j] = new NonAccessPlace();
+					}else {
+						randomMobaMap[i][j] = popFromCellList(cellList);// assign random cells from cell list
+					}
+					
+				}
+			}
+			
+		}
+		
+		this.setCurrentMap(randomMobaMap);
+
+
+	}
+	
 	// method to shuffle the unitPlace List
 	public static void exchange(List<UnitPlace> l) {
 		if(l==null||l.isEmpty()) {
@@ -85,6 +179,18 @@ public class LegendMap extends GeneralMap{
 			}
 		}	
 	}
+	
+	// method to pop cells from cell List
+	public static UnitPlace popFromCellList(List<UnitPlace> ls) {
+		UnitPlace targetCell = null;
+		if(!ls.isEmpty()) {
+            targetCell = ls.get(0);
+			ls.remove(0);
+		}
+		
+		return targetCell;
+	}
+	
 	
 	// method to check if heros are blocked 
 	public boolean isHeroBlocked() {
@@ -179,6 +285,35 @@ public class LegendMap extends GeneralMap{
 		}else {
 			super.setMapWidth(8);
 		}
+	}
+	
+	// set the width of each lane
+	public void setLaneWidth(int wid) {
+		if(wid>=2) {
+			this.laneWidth = wid;
+		}else {
+			this.laneWidth = 2;
+		}
+	}
+	
+	public int getLaneWidth() {
+		return this.laneWidth;
+	}
+	
+	public void setIsMoba(boolean flag) {
+		this.isMobaMode = flag;
+	}
+	
+	public boolean getIsMoba() {
+		return this.isMobaMode;
+	}
+	
+	public void setHeroList(List<Hero> hlist) {
+		this.herolist = hlist;
+	}
+	
+	public List<Hero> getHeroList(){
+		return this.herolist;
 	}
 	
 	
