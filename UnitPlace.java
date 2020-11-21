@@ -1,5 +1,5 @@
 package LegendGames;
-
+import Games.*;
 
 public class UnitPlace {
 	private String name;
