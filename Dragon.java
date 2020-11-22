@@ -1,4 +1,3 @@
-package LegendGames;
 
 // create a Dragon class which can be specified more details in the future
 public class Dragon extends Monster{

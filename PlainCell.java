@@ -1,4 +1,3 @@
-package LegendGames;
 
 public class PlainCell extends UnitPlace{
 	

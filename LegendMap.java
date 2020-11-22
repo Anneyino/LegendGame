@@ -1,7 +1,4 @@
-package LegendGames;
-
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 import java.util.Random;
 
@@ -14,8 +11,8 @@ public class LegendMap extends GeneralMap{
 	
 	private int laneWidth; // the width of a lane, default is 2
 	private boolean isMobaMode; // to decide whether the map is moba or not
-	private List<Hero> herolist; // the heroes in moba legend game.
-	
+	private List<Hero> heroList; // the heroes in moba legend game.
+	private int[][] positionInfo=new int[3][4]; // the hero and monster position in a lane, 3 lanes, 0=hero position, 1=monster position, 2=hero territory(the farthest position), 3=monster territory
 	public LegendMap() {
 		super("LegendMap",8,8);
 		
@@ -42,13 +39,13 @@ public class LegendMap extends GeneralMap{
 		
 		
 		int mapSize = this.getMapLength()*this.getMapWidth();
-		Double marketDouble = mapSize*0.3;
-		int marketNum = marketDouble.intValue();
-		Double commonCellDouble = mapSize*0.5;
-		int commonCellNum = commonCellDouble.intValue();
+		double marketDouble = mapSize*0.3;
+		int marketNum = (int) marketDouble;
+		double commonCellDouble = mapSize*0.5;
+		int commonCellNum = (int) commonCellDouble;
 		
 		int nonAccessNum = mapSize - marketNum - commonCellNum; 
-		List<UnitPlace> unitList = new ArrayList<UnitPlace>();
+		List<UnitPlace> unitList = new ArrayList<>();
 		
 		for(int i=0;i<marketNum;i++) {
 			unitList.add(new Market());
@@ -86,16 +83,16 @@ public class LegendMap extends GeneralMap{
 		
 		int randomSize = 3*this.laneWidth*(this.getMapWidth()-2); // get the size we need to randomly assign for the moba map
 		
-		Double BlushSize = randomSize*0.2;
-		int BlushNum = BlushSize.intValue();
-		Double CaveSize = randomSize*0.2;
-		int CaveNum = CaveSize.intValue();
-		Double KoulouSize = randomSize*0.2;
-		int KoulouNum = KoulouSize.intValue();
+		double BlushSize = randomSize*0.2;
+		int BlushNum = (int) BlushSize;
+		double CaveSize = randomSize*0.2;
+		int CaveNum = (int) CaveSize;
+		double KoulouSize = randomSize*0.2;
+		int KoulouNum = (int) KoulouSize;
 		
 		int PlainNum = randomSize - BlushNum - CaveNum - KoulouNum;
 		
-		List<UnitPlace> cellList = new ArrayList<UnitPlace>();
+		List<UnitPlace> cellList = new ArrayList<>();
 		
 		for(int i = 0; i<BlushNum;i++) {
 			cellList.add(new BlushCell());
@@ -293,29 +290,17 @@ public class LegendMap extends GeneralMap{
 	
 	// override set method for maplength
 	public void setMapLength(int len) {
-		if(len>=8) {
-			super.setMapLength(len);
-		}else {
-			super.setMapLength(8);
-		}
+		super.setMapLength(Math.max(len, 8));
 	}
 	
 	// override set method for mapwidth
 	public void setMapWidth(int wid) {
-		if(wid>=8) {
-			super.setMapWidth(wid);
-		}else {
-			super.setMapWidth(8);
-		}
+		super.setMapWidth(Math.max(wid, 8));
 	}
 	
 	// set the width of each lane
 	public void setLaneWidth(int wid) {
-		if(wid>=2) {
-			this.laneWidth = wid;
-		}else {
-			this.laneWidth = 2;
-		}
+		this.laneWidth = Math.max(wid, 2);
 	}
 	
 	public int getLaneWidth() {
@@ -331,11 +316,11 @@ public class LegendMap extends GeneralMap{
 	}
 	
 	public void setHeroList(List<Hero> hlist) {
-		this.herolist = hlist;
+		this.heroList = hlist;
 	}
 	
 	public List<Hero> getHeroList(){
-		return this.herolist;
+		return this.heroList;
 	}
 	
 	
@@ -346,7 +331,24 @@ public class LegendMap extends GeneralMap{
 	public int[] getHeroPos() {
 		return this.HeroPosition;
 	}
-	
+
+	public void setMonsterMove(int index) {
+		this.positionInfo[index][1] ++;
+		if(this.positionInfo[index][1]>this.positionInfo[index][3]){
+			this.positionInfo[index][3]=this.positionInfo[index][1];
+		}
+	}
+	public void setHeroMove(int index){
+		this.positionInfo[index][0] --;
+		if(this.positionInfo[index][0]<this.positionInfo[index][2]){
+			this.positionInfo[index][2]=this.positionInfo[index][0];
+		}
+	}
+
+	public boolean canLiveMoveForward(int index){
+		return this.positionInfo[index][0]>this.positionInfo[index][1];
+	}
+
 	public void moveHeroUp() {
 		int HeroX = HeroPosition[0];
 		int HeroY = HeroPosition[1];
@@ -420,7 +422,7 @@ public class LegendMap extends GeneralMap{
 			if(i<width) {
 				for(int k=0;k<length;k++) {
 					if(HeroPosition[0]==i&&HeroPosition[1]==k) {
-						System.out.print("|H "); // show heros position
+						System.out.print("|H "); // show hero's position
 					}else {
 						System.out.print("|"+currentMap[i][k].getMark()+" ");
 					}
@@ -430,9 +432,15 @@ public class LegendMap extends GeneralMap{
 				}
 			}
 		}
-		System.out.println("");
-		System.out.println("H for heroes, M for markets, X for inaccessibles");
-		System.out.println("");
+		System.out.println("\nH for heroes, M for markets, X for inaccessible places\n");
+	}
+
+	public void setPositionInfo(int[][] positionInfo) {
+		this.positionInfo = positionInfo;
+	}
+
+	public int[][] getPositionInfo() {
+		return positionInfo;
 	}
 
 	@Override

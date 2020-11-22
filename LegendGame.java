@@ -1,4 +1,3 @@
-package LegendGames;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -6,7 +5,16 @@ import java.util.Random;
 import java.util.Scanner;
 
 public class LegendGame extends RPGGame<LegendMap>{
-	
+	public static final String ANSI_RESET = "\u001B[0m";
+	public static final String ANSI_BLACK = "\u001B[30m";
+	public static final String ANSI_RED = "\u001B[31m";
+	public static final String ANSI_GREEN = "\u001B[32m";
+	public static final String ANSI_YELLOW = "\u001B[33m";
+	public static final String ANSI_BLUE = "\u001B[34m";
+	public static final String ANSI_PURPLE = "\u001B[35m";
+	public static final String ANSI_CYAN = "\u001B[36m";
+	public static final String ANSI_WHITE = "\u001B[37m";
+
 	private List<Hero> heroList;
 	
 	private List<Monster> monsterList;
@@ -372,7 +380,7 @@ public class LegendGame extends RPGGame<LegendMap>{
 		while(!isHeroNoOkay) {
 			String heroNoStr = sc.next();
 			if(heroNoStr.matches("\\d+")) {
-				int heroNo = Integer.valueOf(heroNoStr);
+				int heroNo = Integer.parseInt(heroNoStr);
 				// if valid for hero list size 
 				if(heroNo<=this.heroList.size()) {
 					// set isHeroNoOkay true
@@ -395,22 +403,20 @@ public class LegendGame extends RPGGame<LegendMap>{
 	                		itemIdStr = sc.next();
 	                	}
 	                	
-	                	int itemId = Integer.valueOf(itemIdStr);
+	                	int itemId = Integer.parseInt(itemIdStr);
 	                	if(shopType==1) {
 	                		if(market.getGeneralItemMap().containsKey(itemId)) {
 		                		isItemIdOkay = true;
 		                		market.PurchaseItems(selectedHero, itemId); // purchase regular items
 		                	}else {
-		                		isItemIdOkay = false;
-		                		System.out.println("Please enter a valid item id:");
+								System.out.println("Please enter a valid item id:");
 		                	}
 	                	}else if(shopType==2) {
 	                		if(market.getSpellMap().containsKey(itemId)) {
 		                		isItemIdOkay = true;
 		                		market.PurchaseSpells(selectedHero, itemId); // purchase regular items
 		                	}else {
-		                		isItemIdOkay = false;
-		                		System.out.println("Please enter a valid item id:");
+								System.out.println("Please enter a valid item id:");
 		                	}
 	                	}
 	             	     	
@@ -460,7 +466,7 @@ public class LegendGame extends RPGGame<LegendMap>{
 	                		System.out.println("Please enter a valid integer:");
 	                		itemNoStr = sc.next();
 	                	}
-						int itemNo = Integer.valueOf(itemNoStr);
+						int itemNo = Integer.parseInt(itemNoStr);
 						
 						if(itemNo<=selectedHero.getBackpack().size()) {
 							isItemNoOkay = true;
@@ -506,8 +512,8 @@ public class LegendGame extends RPGGame<LegendMap>{
 				// check the format is valid
 				if(locatStr.matches("^\\\\d+(,\\\\d+)*$")) {
 					String[] position = locatStr.split(",");
-					int row = Integer.valueOf(position[0]);
-					int col = Integer.valueOf(position[1]);
+					int row = Integer.parseInt(position[0]);
+					int col = Integer.parseInt(position[1]);
 					// if out of range
 					if(row>=theMap.getMapWidth()||col>=theMap.getMapLength()) {
 						System.out.println("The location is out of the range of the map!");
@@ -563,9 +569,9 @@ public class LegendGame extends RPGGame<LegendMap>{
 			System.out.printf("%-11d", hero.getLevel());
 			System.out.printf("%-17d", new Double(hero.getHp()).intValue());
 			System.out.printf("%-15d", new Double(hero.getMana()).intValue());
-			System.out.printf("%-14d", new Double(hero.getAttributes().get("Strength")).intValue());
-			System.out.printf("%-12d", new Double(hero.getAttributes().get("Agility")).intValue());
-			System.out.printf("%-14d", new Double(hero.getAttributes().get("Dexterity")).intValue());
+			System.out.printf("%-14d", hero.getAttributes().get("Strength").intValue());
+			System.out.printf("%-12d", hero.getAttributes().get("Agility").intValue());
+			System.out.printf("%-14d", hero.getAttributes().get("Dexterity").intValue());
 			System.out.printf("%-8d", hero.getExp());
 			System.out.println(""); // new line
 		}
@@ -578,10 +584,10 @@ public class LegendGame extends RPGGame<LegendMap>{
 		// init the return boolean flag
 		boolean IsEquipSuccess = false;
 		// create a int list to store itemNo index of equipments
-		List<Integer> equipmentIndexList = new ArrayList<Integer>();
+		List<Integer> equipmentIndexList = new ArrayList<>();
 		
 		// create a equipment list
-		List<Item> availableEquipments = new ArrayList<Item>();
+		List<Item> availableEquipments = new ArrayList<>();
 		// first show hero's backpack
 		System.out.println("Equipment owned by "+hero.getName());
 		System.out.println("*******************************************");
@@ -616,7 +622,7 @@ public class LegendGame extends RPGGame<LegendMap>{
 				System.out.println("Please enter a valid integer:");
 				itemNoStr = sc.next();
 			}
-			int itemIndex = Integer.valueOf(itemNoStr);
+			int itemIndex = Integer.parseInt(itemNoStr);
 			if(equipmentIndexList.contains(itemIndex)) {
 				isItemNoOkay = true; // stop the okay loop
 				Item selectedEquipment = hero.getBackpack().get(itemIndex); // get the equipment
@@ -666,7 +672,7 @@ public class LegendGame extends RPGGame<LegendMap>{
 		while(!isHeroNoOkay) {
 			String heroNoStr = sc.next();
 			if(heroNoStr.matches("\\d+")) {
-				int heroNo = Integer.valueOf(heroNoStr);
+				int heroNo = Integer.parseInt(heroNoStr);
 				// if valid for hero list size 
 				if(heroNo<=this.heroList.size()) {
 					// set isHeroNoOkay true
@@ -718,53 +724,75 @@ public class LegendGame extends RPGGame<LegendMap>{
 		boolean isControlOkay = false;
 		while(!isControlOkay) {
 			String controlStr = sc.next();
-			if(controlStr.equals("W")||controlStr.equals("w")) {
-				if(legenMap.UpMovable()) {
+			switch (controlStr) {
+				case "W":
+				case "w":
+					if (legenMap.UpMovable()) {
+						isControlOkay = true;
+						legenMap.moveHeroUp();
+					} else {
+						System.out.println("Can't move there");
+					}
+					break;
+				case "A":
+				case "a":
+					if (legenMap.LeftMovable()) {
+						isControlOkay = true;
+						legenMap.moveHeroLeft();
+					} else {
+						System.out.println("Can't move there");
+					}
+					break;
+				case "S":
+				case "s":
+					if (legenMap.DownMovable()) {
+						isControlOkay = true;
+						legenMap.moveHeroDown();
+					} else {
+						System.out.println("Can't move there");
+					}
+					break;
+				case "D":
+				case "d":
+					if (legenMap.RightMovable()) {
+						isControlOkay = true;
+						legenMap.moveHeroRight();
+					} else {
+						System.out.println("Can't move there");
+					}
+					break;
+				case "E":
+				case "e":
+					isControlOkay = false; // false means the equip don't give a specific move, so the loop continue
+
+					this.changeEquipment();
+					System.out.println("You have changed the equipment, Now input your next move(W/A/S/D/E/T/I/Q):");
+					break;
+				case "T":
+				case "t":
+					isControlOkay = false; // false means the check inventory don't give a specific move, so the loop continue
+
+					this.showInventory();
+					System.out.println("You have checked the inventory, Now input your next move(W/A/S/D/E/T/I/Q):");
+					break;
+				case "I":
+				case "i":
+					isControlOkay = false;// false means the info don't give a specific move, so the loop continue
+
+					this.showHerosStatus();
+					System.out.println("");
+					System.out.println("You have checked the status of Heroes, Now input your next move(W/A/S/D/E/T/I/Q):");
+					break;
+				case "Q":
+				case "q":
 					isControlOkay = true;
-					legenMap.moveHeroUp();
-				}else {
-					System.out.println("Can't move there");
-				}
-			}else if(controlStr.equals("A")||controlStr.equals("a")) {
-				if(legenMap.LeftMovable()) {
-					isControlOkay = true;
-					legenMap.moveHeroLeft();
-				}else {
-					System.out.println("Can't move there");
-				}
-			}else if(controlStr.equals("S")||controlStr.equals("s")) {
-				if(legenMap.DownMovable()) {
-					isControlOkay = true;
-					legenMap.moveHeroDown();
-				}else {
-					System.out.println("Can't move there");
-				}
-			}else if(controlStr.equals("D")||controlStr.equals("d")) {
-				if(legenMap.RightMovable()) {
-					isControlOkay = true;
-					legenMap.moveHeroRight();
-				}else {
-					System.out.println("Can't move there");
-				}
-			}else if(controlStr.equals("E")||controlStr.equals("e")){
-				isControlOkay = false; // false means the equip don't give a specific move, so the loop continue
-				this.changeEquipment();
-				System.out.println("You have changed the equipment, Now input your next move(W/A/S/D/E/T/I/Q):");
-			}else if(controlStr.equals("T")||controlStr.equals("t")){
-				isControlOkay = false; // false means the check inventory don't give a specific move, so the loop continue
-				this.showInventory();
-				System.out.println("You have checked the inventory, Now input your next move(W/A/S/D/E/T/I/Q):");
-			}else if(controlStr.equals("I")||controlStr.equals("i")) {
-				isControlOkay = false;// false means the info don't give a specific move, so the loop continue
-				this.showHerosStatus();
-				System.out.println("");
-				System.out.println("You have checked the status of Heroes, Now input your next move(W/A/S/D/E/T/I/Q):");
-			}else if(controlStr.equals("Q")||controlStr.equals("q")) {
-				isControlOkay = true;
-				this.endGame(); // quit the game
-			}else {
-				isControlOkay = false;
-				System.out.println("Please input W/A/S/D/E/T/I/Q :");
+					this.endGame(); // quit the game
+
+					break;
+				default:
+					isControlOkay = false;
+					System.out.println("Please input W/A/S/D/E/T/I/Q :");
+					break;
 			}
 		}
 		

@@ -1,4 +1,3 @@
-package LegendGames;
 
 // a fire spell will decrease the defense of monster
 public class FireSpell extends Spell{

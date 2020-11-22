@@ -1,11 +1,7 @@
-package LegendGames;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
-public class Hero implements Cloneable{
+public class Hero extends Live implements Cloneable {
 	private String name;
 	private int id;
 	private int level;
@@ -20,12 +16,13 @@ public class Hero implements Cloneable{
 	private int exp; // the exp will be initialized while creating the new hero
 	private boolean isAlivel; // the status to store hero's alive condition
 	private Map<String,Double> attributes; // strength,dexterity and agility
-	private Map<String,Item> Equipments; // current equipments
+	private final Map<String,Item> Equipments; // current equipments
 	private List<Item> backpack; // the items hero have
 	private List<Spell> spellBag; // a hero masters some spells
-	
 	private GrowBehavior growBehavior; // the grow behavior of hero
-	
+
+	public int belonging=0;//the very first nexusCell this hero was in
+
 	public Hero() {
 		this.setName("A hero");
 		this.setId(0);
@@ -93,20 +90,16 @@ public class Hero implements Cloneable{
 		this.increaseLevel(); // increase Lv
 		this.setHp(100*this.getLevel()); // increase HP
 		
-		Double mp = this.getMana();
+		double mp = this.getMana();
 		mp = mp * 1.1;
-		int new_mp = new Double(mp).intValue();
+		int new_mp = (int) mp;
 		this.setMana(new_mp);// increase Mana
 		
 	}
 	
 	// method to check is the hero ready to level up
 	public boolean IsLevelUp() {
-		if(this.exp>=this.totalExpToLevelUp()) {
-			return true;
-		}else {
-			return false;
-		}
+		return this.exp >= this.totalExpToLevelUp();
 	}
 	
 	// method to calculate total exp hero need to level up
@@ -148,11 +141,8 @@ public class Hero implements Cloneable{
 	}
 	
 	public void setId(int i) {
-		if(i>=0) {
-			this.id = i;
-		}else {
-			this.id = 0;
-		}// the id must be over 0 
+		// the id must be over 0
+		this.id = Math.max(i, 0);
 	}
 	
 	public int getId() {
@@ -160,11 +150,8 @@ public class Hero implements Cloneable{
 	}
 	
 	public void setLevel(int lv) {
-		if(lv>=1) {
-			this.level = lv;
-		}else {
-			this.level = 1;
-		}// the level must be over 1
+		// the level must be over 1
+		this.level = Math.max(lv, 1);
 	}
 	
 	public void increaseLevel() {
@@ -208,11 +195,7 @@ public class Hero implements Cloneable{
 	}
 	
 	public boolean isDead() {
-		if(this.getHp()==0) {
-			return true;
-		}else {
-			return false;
-		}
+		return this.getHp() == 0;
 	}
 	
 	public void setMana(double m) {
@@ -279,11 +262,8 @@ public class Hero implements Cloneable{
 	}
 	
 	public void setExp(int ex) {
-		if(ex>=0) {
-			this.exp = ex;
-		}else {
-			this.exp = 0;
-		} // the exp must be over 0
+		// the exp must be over 0
+		this.exp = Math.max(ex, 0);
 	}
 	
 	public int getExp() {
@@ -304,7 +284,7 @@ public class Hero implements Cloneable{
 		return this.isAlivel;
 	}
 	public void setAttributes(double strength, double dexterity, double agility) {
-		this.attributes = new HashMap<String,Double>();
+		this.attributes = new HashMap<>();
 		this.attributes.put("Strength", strength);
 		this.attributes.put("Dexterity", dexterity);
 		this.attributes.put("Agility", agility);
@@ -370,7 +350,7 @@ public class Hero implements Cloneable{
 			return false; // equip fail
 		}
 	}
-	
+
 	public void setBackpack(List<Item> bag) {
 		this.backpack = bag;
 	}
@@ -405,5 +385,129 @@ public class Hero implements Cloneable{
 	public void removeFromSpellBag(Spell sp) {
 		this.spellBag.remove(sp);
 	}
+
+	public UnitPlace move(LegendMap world, String indicator) {//make this hero move in the world
+		UnitPlace originalTile = world.getCurrentMap()[x][y];
+		originalTile.setHasHero(false);
+		switch (indicator) {
+			case "w", "W" -> x--;//up
+			case "a", "A" -> y--;//left
+			case "s", "S" -> x++;//down
+			case "d", "D" -> y++;//right
+		}
+		UnitPlace currentTile= world.getCurrentMap()[x][y];
+		currentTile.setHeroHere(this);
+		currentTile.setHasHero(true);
+		world.setHeroMove(this.laneNo);
+		return currentTile;
+	}
+	public UnitPlace eventsWhenNoFight(LegendMap world){//out of a fight, things that can be done by a hero
+		System.out.println(name+ ", now, please press W/w, A/a, S/s, D/d, to go up, left, down or right, press c/C to change equipment, press b/B to check your inventories, press p/P to consume a potion or press i/I to get information about heroes.");
+		InputChecker checker=new InputChecker();
+		String indicator;
+		indicator = checker.moveChecker(world,this);
+		while (indicator.equals("i")||indicator.equals("I")||indicator.equals("c")||indicator.equals("C")||indicator.equals("b")||indicator.equals("B")||indicator.equals("p")||indicator.equals("P")){
+			switch (indicator){
+				case "i","I"->System.out.println(world.getHeroList());//get information of all heroes
+				case "c","C"->{//change equipment
+					changeEquipment();
+					return world.getCurrentMap()[x][y];
+				}
+				case "b","B"->{//check bag
+					showBag();
+				}
+				case "p","P"->{//use potion
+					consumePotion();
+					return world.getCurrentMap()[x][y];
+				}
+			}
+			System.out.println(name+ ", now, please press W/w, A/a, S/s, D/d, to go up, left, down or right, press c/C to change equipment, press b/B to check your inventories, press p/P to consume a potion or press i/I to get information about heroes.");
+			indicator = checker.moveChecker(world,this);
+		}
+		return move(world, indicator);
+	}
+
+	public void showBag() {//show what's in this hero's bag
+		if(backpack.isEmpty()){
+			System.out.println("You have nothing in your bag.");
+		}
+		else {
+			System.out.println("You now have following inventories: \n"+backpack);
+		}
+	}
+
+	public int consumePotion() {//use potion
+		InputChecker checker=new InputChecker();
+		List<Potion> potions=new ArrayList<>();
+		for (Item i:
+				backpack) {
+			if(i instanceof Potion){
+				potions.add((Potion) i);
+			}
+		}
+		if(potions.isEmpty()){
+			System.out.println("You have no potion!");
+			return 0;
+		}
+		else{
+			System.out.println("You have following potions.\n"+potions+"\nPlease choose which one to consume.");
+			int whichPotion=Integer.parseInt(checker.numberChecker(potions.size())) ;
+			Potion consuming=potions.get(whichPotion-1);
+			consuming.consume(this);
+			return 1;
+		}
+	}
+
+	public int changeEquipment() {//change equipment, a for armor, w for weapon
+		InputChecker checker=new InputChecker();
+		System.out.println("Press a/A to change armor, press w/W to change weapon.");
+		String whichEquipment= checker.changeEquipmentChecker();
+		switch (whichEquipment) {
+			case "w", "W" -> {
+				List<Weapon> weapons = new ArrayList<>();
+				for (Item item : this.backpack) {
+					if (item instanceof Weapon) {
+						weapons.add((Weapon) item);
+					}
+				}
+				if (weapons.isEmpty()) {
+					System.out.println("You have no weapon.");
+					return 0;
+				}
+				System.out.println("You have following weapons:\n" + weapons + "\nChoose which one to equip.");
+				int whichWeapon = Integer.parseInt(checker.numberChecker(weapons.size())) - 1;
+				this.setWeapon(weapons.get(whichWeapon));
+				return 1;
+			}
+			case "a", "A" -> {
+				List<Armor> armors = new ArrayList<>();
+				for (Item item : this.backpack) {
+					if (item instanceof Armor) {
+						armors.add((Armor) item);
+					}
+				}
+				if (armors.isEmpty()) {
+					System.out.println("You have no armor.");
+					return 0;
+				}
+				System.out.println("You have following weapons:\n" + armors + "\nChoose which one to equip.");
+				int whichArmor = Integer.parseInt(checker.numberChecker(armors.size())) - 1;
+				this.setArmor(armors.get(whichArmor));
+				return 1;
+			}
+		}
+		return 1;
+	}
+
+	public Hero revive(LegendMap world){
+		this.setHp(100*this.getLevel());
+		UnitPlace[][] tiles=world.getCurrentMap();
+		tiles[x][y].setHasHero(false);
+		UnitPlace respawnPoint=tiles[tiles.length][belonging*3];
+		respawnPoint.setHasHero(true);
+		respawnPoint.setHeroHere(this);
+		return this;
+	}
+
 
 }

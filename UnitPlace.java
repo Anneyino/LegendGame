@@ -1,5 +1,3 @@
-package LegendGames;
-import Games.*;
 
 import java.util.List;
 
@@ -12,8 +10,8 @@ public class UnitPlace {
 	private String type;
 	private Hero heroHere;
 	private Monster monsterHere;
-	private boolean hasHero;
-	private boolean hasMonster;
+	private boolean hasHero=false;
+	private boolean hasMonster=false;
 	
 	public UnitPlace() {
 		this.setName("a unit place for legend");
@@ -102,7 +100,7 @@ public class UnitPlace {
 	}
 	
 	public void setHeroHere(Hero h) {
-		this.heroHere = h;
+		this.heroHere=h;
 	}
 	
 	public Hero getHeroHere() {
@@ -110,7 +108,7 @@ public class UnitPlace {
 	}
 	
 	public void setMonsterHere(Monster m) {
-		this.monsterHere = m;
+		this.monsterHere=m;
 	}
 	
 	public Monster getMonsterHere() {
@@ -150,4 +148,6 @@ public class UnitPlace {
 			return heroSide+" "+monsterSide;
 		}
 	}
+
+
 }

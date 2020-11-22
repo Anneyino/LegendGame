@@ -1,4 +1,3 @@
-package LegendGames;
 
 //create a Exoskeleton class which can be specified more details in the future
 public class Exoskeleton extends Monster{
