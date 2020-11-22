@@ -1,4 +1,3 @@
-package LegendGames;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -46,9 +45,9 @@ public class Battle {
 			System.out.printf("%-17s", hero.getName());
 			System.out.printf("%-20d", new Double(hero.getHp()).intValue());
 			System.out.printf("%-19d", new Double(hero.getMana()).intValue());
-			System.out.printf("%-17d", new Double(hero.getAttributes().get("Strength")).intValue());
-			System.out.printf("%-14d", new Double(hero.getAttributes().get("Agility")).intValue());
-			System.out.printf("%-14d", new Double(hero.getAttributes().get("Dexterity")).intValue());
+			System.out.printf("%-17d", hero.getAttributes().get("Strength").intValue());
+			System.out.printf("%-14d", hero.getAttributes().get("Agility").intValue());
+			System.out.printf("%-14d", hero.getAttributes().get("Dexterity").intValue());
 			System.out.printf("%-10d", hero.getExp());
 			System.out.println(""); // new line
 		}

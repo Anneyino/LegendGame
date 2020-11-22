@@ -1,4 +1,3 @@
-package LegendGames;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -7,8 +6,8 @@ public class Market extends UnitPlace{
 	
 	ItemList itemInventory;
 	
-	Map<Integer,Item> generalItemMap = new HashMap<Integer,Item>();
-	Map<Integer,Spell> SpellMap = new HashMap<Integer,Spell>();
+	Map<Integer,Item> generalItemMap = new HashMap<>();
+	Map<Integer,Spell> SpellMap = new HashMap<>();
 	
 
 	
@@ -123,7 +122,7 @@ public class Market extends UnitPlace{
 	// all items(spells can't be sold) can be sold in this method, bagID means the item sequence in the backpack
 	public void SellItems(Hero hero, int bagID) {
 		
-		double soldPrice = hero.getBackpack().get(bagID).getPrice()/2;
+		double soldPrice = hero.getBackpack().get(bagID).getPrice()/2.0;
 		hero.incMoney(soldPrice);
 		hero.removeFromBackPack(bagID);	
 		
@@ -141,7 +140,7 @@ public class Market extends UnitPlace{
 			System.out.printf("%-21d", wp.getPrice());
 			System.out.printf("%-15d", wp.getLevelLimit());
 			System.out.printf("%-5d", wp.getDamage());
-			System.out.println("");
+			System.out.println();
 		}
 	}
 	
@@ -156,7 +155,7 @@ public class Market extends UnitPlace{
 			System.out.printf("%-21d", ar.getPrice());
 			System.out.printf("%-15d", ar.getLevelLimit());
 			System.out.printf("%-5d", ar.getDefend());
-			System.out.println("");
+			System.out.println();
 		}
 		
 	}
@@ -172,7 +171,7 @@ public class Market extends UnitPlace{
 			System.out.printf("%-21d", pt.getPrice());
 			System.out.printf("%-15d", pt.getLevelLimit());
 			System.out.printf("%-5d", pt.getIncrease());
-			System.out.println("");
+			System.out.println();
 		}
 	}
 	
@@ -186,7 +185,7 @@ public class Market extends UnitPlace{
 			System.out.printf("%-21d", fs.getPrice());
 			System.out.printf("%-15d", fs.getLevelLimit());
 			System.out.printf("%-5d", fs.getDamage());
-			System.out.println("");
+			System.out.println();
 		}
 			
 	}
@@ -201,7 +200,7 @@ public class Market extends UnitPlace{
 			System.out.printf("%-21d", is.getPrice());
 			System.out.printf("%-15d", is.getLevelLimit());
 			System.out.printf("%-5d", is.getDamage());
-			System.out.println("");
+			System.out.println();
 		}
 	}
 	
@@ -215,7 +214,7 @@ public class Market extends UnitPlace{
 			System.out.printf("%-21d", ls.getPrice());
 			System.out.printf("%-15d", ls.getLevelLimit());
 			System.out.printf("%-5d", ls.getDamage());
-			System.out.println("");
+			System.out.println();
 		}
 		
 		

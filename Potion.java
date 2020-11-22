@@ -1,4 +1,4 @@
-package LegendGames;
+import java.util.List;
 
 public class Potion extends Item{
 	
@@ -48,4 +48,19 @@ public class Potion extends Item{
 		pt = (Potion)super.clone();
 		return pt;
 	}
+	public void consume(Hero h){//consume a potion, add attributes, remove the potion
+		for(String s : this.attribute_affect) {
+			switch (s) {
+				case "Health" -> h.incHp(getIncrease());
+				case "Mana" -> h.incMana(getIncrease());
+				case "Defense" -> h.incDefense(getIncrease());
+				case "Strength" -> h.incStrength(getIncrease());
+				case "Agility" -> h.incAgility(getIncrease());
+				case "Dexterity" -> h.incDexterity(getIncrease());
+			}
+		}
+		List<Item> bag= h.getBackpack();bag.remove(this);h.setBackpack(bag);
+		System.out.println("You have consumed the potion, you current stats are: \n"+h);
+	}
+
 }

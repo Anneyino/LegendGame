@@ -1,4 +1,3 @@
-package LegendGames;
 //This is an abstract concept of game, which contains abstract methods to be implemented in specific games.
 public abstract class Game {
 	private String name;

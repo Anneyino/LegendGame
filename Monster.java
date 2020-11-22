@@ -1,6 +1,5 @@
-package LegendGames;
 
-public class Monster implements Cloneable{
+public class Monster extends Live implements Cloneable{
 	private String name;
 	private double HP;
 	private int level;
@@ -177,4 +176,20 @@ public class Monster implements Cloneable{
     public String getRace() {
     	return this.race;
     }
+	private UnitPlace move(LegendMap world, String indicator) {//make this hero move in the world
+		UnitPlace originalTile = world.getCurrentMap()[x][y];
+		originalTile.setHasMonster(false);
+		x++;
+		UnitPlace currentTile= world.getCurrentMap()[x][y];
+		if(!currentTile.getHasMonster()){
+			currentTile.setMonsterHere(this);
+			currentTile.setHasMonster(true);
+			return currentTile;
+		}
+		else{
+			x--;
+			return world.getCurrentMap()[x][y];
+		}
+	}
+
 }

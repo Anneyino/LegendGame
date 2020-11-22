@@ -1,4 +1,3 @@
-package LegendGames;
 
 import java.util.Map;
 

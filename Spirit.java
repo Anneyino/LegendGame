@@ -1,4 +1,3 @@
-package LegendGames;
 //create a Spirit class which can be specified more details in the future
 public class Spirit extends Monster{
 	

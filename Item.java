@@ -1,4 +1,3 @@
-package LegendGames;
 
 public class Item implements Cloneable{
 	
@@ -92,4 +91,5 @@ public class Item implements Cloneable{
 	public String getType() {
 		return this.type;
 	}
+
 }

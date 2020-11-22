@@ -1,4 +1,3 @@
-package LegendGames;
 
 public class Sorcerer extends Hero{
 	
