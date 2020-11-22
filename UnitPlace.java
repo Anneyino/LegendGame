@@ -136,16 +136,16 @@ public class UnitPlace {
 	@Override
 	public String toString() {
 		if(!isAccessible){
-			return "xxx";
+			return " X X X ";
 		}
 		else{
 			String heroSide="   ";
 			String monsterSide="   ";
 			if(hasHero){
-				heroSide=" "+heroHere.getName();
+				heroSide=" "+heroHere.getMark();
 			}
 			if(hasMonster){
-				monsterSide=monsterHere.getName()+" ";
+				monsterSide=monsterHere.getMark()+" ";
 			}
 			return heroSide+" "+monsterSide;
 		}

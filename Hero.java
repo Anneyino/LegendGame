@@ -10,6 +10,9 @@ public class Hero implements Cloneable{
 	private int id;
 	private int level;
 	private String character;// can be Warrior, Paladin and Sorcerer now
+	private String mark; // a string member to be shown on map for this hero
+	private int x_pos; // the x position for hero
+	private int y_pos; // the y position for hero
 	private double HP; // this hp is not capped
 	private double mana; // this mana is not capped
 	private double defense; // the defense of the hero
@@ -28,6 +31,7 @@ public class Hero implements Cloneable{
 		this.setId(0);
 		this.setLevel(1);
 		this.setCharacter("general hero");
+		this.setMark("H1");
 		this.setHp(100);
 		this.setMana(100);
 		this.setDefense(300);
@@ -49,6 +53,7 @@ public class Hero implements Cloneable{
 		this.setId(id);
 		this.setLevel(1);
 		this.setCharacter("general hero");
+		this.setMark("H1");
 		this.setHp(100);
 		this.setMana(1000);
 		this.setDefense(300);
@@ -118,6 +123,28 @@ public class Hero implements Cloneable{
 	
 	public String getName() {
 		return this.name;
+	}
+	
+	public void setMark(String m) {
+		this.mark = m;
+	}
+	public String getMark() {
+		return this.mark;
+	}
+	
+	public void setXpos(int x) {
+		this.x_pos = x;
+	}
+	public int getXpos() {
+		return this.x_pos;
+	}
+	
+	public void setYpos(int y) {
+		this.y_pos = y;
+	}
+	
+	public int getYpos() {
+		return this.y_pos;
 	}
 	
 	public void setId(int i) {

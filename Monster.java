@@ -2,6 +2,9 @@ package LegendGames;
 
 public class Monster implements Cloneable{
 	private String name;
+	private String mark;
+	private int x_pos;// the x position of monster
+	private int y_pos;// the y position of monster
 	private double HP;
 	private int level;
 	private double damage;
@@ -13,6 +16,7 @@ public class Monster implements Cloneable{
 	
 	public Monster() {
 		this.setName("A monster");
+		this.setMark("M1");
 		this.setLevel(1);
 		this.setHp(100);
 		this.setDamage(100);
@@ -25,6 +29,7 @@ public class Monster implements Cloneable{
 	// the HP of monsters will be 100*level so we don't need to pass the parameter hp
 	public Monster(String n, int lvl, double damage, double def, double dodge, int exp, double money) {
 		this.setName(n);
+		this.setMark("M1");
 		this.setHp(100*lvl);
 		this.setLevel(lvl);
 		this.setDamage(damage);
@@ -56,6 +61,29 @@ public class Monster implements Cloneable{
 	
 	public String getName() {
 		return this.name;
+	}
+	
+	public void setMark(String m) {
+		this.mark = m;
+	}
+	
+	public String getMark() {
+		return this.mark;
+	}
+	
+	public void setXpos(int x) {
+		this.x_pos = x;
+	}
+	public int getXpos() {
+		return this.x_pos;
+	}
+	
+	public void setYpos(int y) {
+		this.y_pos = y;
+	}
+	
+	public int getYpos() {
+		return this.y_pos;
 	}
 	
 	public void setHp(double h) {

@@ -138,6 +138,49 @@ public class LegendGame extends RPGGame<LegendMap>{
 		}
 		
 	}
+	// method to select 3 heroes for moba game
+	public void mobaHeroSelection() {
+		Scanner sc = new Scanner(System.in);
+		System.out.println("You can start your moba Legend with 3 heroes!");
+		// show hero tables in terminal
+		System.out.println("Select your heroes to join the Legend! you can select heroes from the below tables:");
+		System.out.println("");
+		this.getHeroShop().showWarriors();
+		this.getHeroShop().showSorcerers();
+		this.getHeroShop().showPaladins();
+		
+		// select 3 heroes logic
+		for(int i = 1; i<=3;i++) {
+			System.out.println("");
+			System.out.println("Now enter the Hero Id for your hero "+ i +":");
+			boolean isIdOkay = false;
+			String heroIdStr = "";
+			int heroId = 1;
+			while(!isIdOkay) {
+				heroIdStr = sc.next();
+				while(!heroIdStr.matches("\\d+")) {
+					System.out.println("Please enter a valid integer:");
+					heroIdStr = sc.next();
+				}
+				heroId = Integer.valueOf(heroIdStr);
+				
+				// the id exists in mapping relation
+				if(this.getHeroShop().getHeroMap().containsKey(heroId)) {
+					isIdOkay = true;
+					Hero ahero = this.getHeroShop().selectHero(heroId);
+					ahero.setMark("H"+i); // set the hero mark to be H1,H2,H3
+					this.getHeroList().add(ahero);
+				}else {
+					System.out.println("The id should be chosen from the tables:");
+					isIdOkay = false;
+				}
+				
+			}
+			
+		}
+
+	}
+	
 	// encounter market method
 	public void encounterMarket(Market market) {
 		Scanner sc = new Scanner(System.in);
@@ -728,9 +771,24 @@ public class LegendGame extends RPGGame<LegendMap>{
 	}
 	// this method define new game mode for Legend Game II
 	public void MobaGameControl() {
+        Scanner sc = new Scanner(System.in);
 		
+		System.out.println("Press A/a to start next round, Q/q to quit the game:");
+		boolean isControlOkay = false;
+		while(!isControlOkay) {
+			String controlStr = sc.next();
+			if(controlStr.equals("A")||controlStr.equals("a")) {
+				// new a round (pass the round number, currentMap and herolist to it)
+				
+				
+			}else if(controlStr.equals("Q")||controlStr.equals("q")) {
+				isControlOkay = true;
+				this.endGame();// quit the game
+			}
+		}
+
 	}
-	
+	// this method allow users to define their general Legend map
 	public void DIYMap() {
 		Scanner sc = new Scanner(System.in);
 	    
@@ -774,6 +832,48 @@ public class LegendGame extends RPGGame<LegendMap>{
 
 	}
 	
+	public void DIYMobaMap() {
+        Scanner sc = new Scanner(System.in);
+	    
+
+		System.out.println("");
+		System.out.println("Would you like to set the width of each lane and the height of the whole map the Legend Moba Map?(Y/N):");
+
+		boolean isChoiceOkay = false;
+		while(!isChoiceOkay) {
+			String choice = sc.next();
+			if(choice.equals("Y")||choice.equals("y")) {
+				isChoiceOkay = true;
+				System.out.println("Now enter the height of the map(all values under 8 will be set to 8):");// height refers to width here
+			
+				String widthStr = sc.next();
+				while(!widthStr.matches("\\d+")) {
+					System.out.println("Please enter an integer as height(all values under 8 will be set to 8):");
+					widthStr = sc.next();
+				}
+				int wid = Integer.valueOf(widthStr);
+				System.out.println("Now enter the width of each lane(all values under 2 will be set to 2):");
+                String laneWidthStr = sc.next();
+                while(!laneWidthStr.matches("\\d+")) {
+                	System.out.println("Please enter an integer as lane width(all values under 2 will be set to 2):");
+                	laneWidthStr = sc.next();
+				}
+                int laneWidth = Integer.valueOf(laneWidthStr);
+                LegendMap diyMap = new LegendMap(laneWidth,wid,this.heroList);
+                this.setMainMap(diyMap); // set the diy map to main map
+                System.out.println("Great, you have design the size of your Legend Map!");
+			}else if(choice.equals("N")||choice.equals("n")) {
+				isChoiceOkay = true;
+				System.out.println("Alright, Let's apply the default 8x8 Legend Map!");
+				this.setMainMap(new LegendMap()); // apply the default one
+			}else {
+				isChoiceOkay = false;
+                System.out.println("Please choose from (Y/N):");
+			}
+		}
+	}
+	
+	
 	public static void printLegend() {
 		System.out.println();
 		System.out.println(" _        _______  _______  _______  _        ______");
@@ -815,6 +915,28 @@ public class LegendGame extends RPGGame<LegendMap>{
 			}
 		}
 
+
+	}
+	
+	public void mainLogicForMoba() {
+		printLegend();
+		System.out.println("                               Welcome to the Moba Legend World!");
+		System.out.println("");
+		System.out.println("Here is a fantasy world where heroes fight with monsters. Each round heroes and monsters make one movement!");
+		System.out.println("There are 3 heroes on 3 different lanes, top lane, mid lane and bot lane. They need to kill monsters and reach monsters' base to win.");
+		System.out.println("The monsters are generated from their nexus cells every 8 round, if monsters reach heroes' base, then heroes lose.");
+		System.out.println("The map contains different cells which may help heroes to fight, try to make use of the cells!");
+		
+		//firstly select 3 heroes since DIY moba map need herolist as parameter.
+		this.mobaHeroSelection();
+		
+		//then DIY moba Legend Map
+		this.DIYMobaMap();
+		
+		//show the current map
+		String mapString = this.getMainMap().getCurrentMap().toString();
+		System.out.println(mapString);
+		
 
 	}
 
