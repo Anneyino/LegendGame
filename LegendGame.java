@@ -99,7 +99,7 @@ public class LegendGame extends RPGGame<LegendMap>{
 				System.out.println("Please enter a valid integer:");
 				heroNumStr = sc.next();
 			}
-			heroNum = Integer.valueOf(heroNumStr);
+			heroNum = Integer.parseInt(heroNumStr);
 			
 			if(heroNum>=1&&heroNum<=3) {
 				isNumOkay = true;
@@ -129,7 +129,7 @@ public class LegendGame extends RPGGame<LegendMap>{
 					System.out.println("Please enter a valid integer:");
 					heroIdStr = sc.next();
 				}
-				heroId = Integer.valueOf(heroIdStr);
+				heroId = Integer.parseInt(heroIdStr);
 				
 				// the id exists in mapping relation
 				if(this.getHeroShop().getHeroMap().containsKey(heroId)) {
@@ -170,7 +170,7 @@ public class LegendGame extends RPGGame<LegendMap>{
 					System.out.println("Please enter a valid integer:");
 					heroIdStr = sc.next();
 				}
-				heroId = Integer.valueOf(heroIdStr);
+				heroId = Integer.parseInt(heroIdStr);
 				
 				// the id exists in mapping relation
 				if(this.getHeroShop().getHeroMap().containsKey(heroId)) {
@@ -226,8 +226,8 @@ public class LegendGame extends RPGGame<LegendMap>{
 		int diceVal =  rand.nextInt(4);// 1/4 chance to encounter monsters
 		if(diceVal==0) {
 			System.out.println("Encounter monsters, prepare to fight!");
-			//randomly generate monsters whose levels can't surpass hero by 2
-			List<Monster> randomMonsters = cell.generateMonster(heroNum, maxHeroLevel+2);
+			//randomly generate monsters whose levels can't surpass hero
+			List<Monster> randomMonsters = cell.generateMonster(heroNum, maxHeroLevel);
 			this.setMonsterList(randomMonsters);
 			Battle aBattle = new Battle(this.getHeroList(),this.getMonsterList());
 			aBattle.startBattle();
@@ -288,7 +288,7 @@ public class LegendGame extends RPGGame<LegendMap>{
 			for(Item it : h.getBackpack()) {
 				System.out.printf("%-13d", itemNo);
 				System.out.printf("%-20s", it.getName());
-				System.out.printf("%-10d", new Double(it.getPrice()/2).intValue());
+				System.out.printf("%-10d", new Double(it.getPrice()/2.0).intValue());
 				itemNo += 1;
 				System.out.println("");
 
@@ -309,7 +309,7 @@ public class LegendGame extends RPGGame<LegendMap>{
 		for(Item it : hero.getBackpack()) {
 			System.out.printf("%-13d", itemNo);
 			System.out.printf("%-20s", it.getName());
-			System.out.printf("%-10d", new Double(it.getPrice()/2));
+			System.out.printf("%-10d", (double) (it.getPrice() / 2.0));
 			itemNo += 1;
 			System.out.println("");
 
@@ -798,20 +798,31 @@ public class LegendGame extends RPGGame<LegendMap>{
 		
 	}
 	// this method define new game mode for Legend Game II
-	public void MobaGameControl() {
+	public void MobaGameControl(int roundCount) {
         Scanner sc = new Scanner(System.in);
-		
+
 		System.out.println("Press A/a to start next round, Q/q to quit the game:");
 		boolean isControlOkay = false;
 		while(!isControlOkay) {
 			String controlStr = sc.next();
 			if(controlStr.equals("A")||controlStr.equals("a")) {
 				// new a round (pass the round number, currentMap and herolist to it)
-				
-				
+				isControlOkay=true;
+				roundCount++;
+				LegendMap world=this.getMainMap();
+				Round round=new Round(heroList,world.getMonsterList());
+				if(roundCount%8==0){
+					List<Monster> newMonsters= world.spawnMonsters(world.getCurrentMap()[0]);
+					round.addMonsters(newMonsters);
+				}
+				this.isGameEnd= round.aNewRound(world);
+
 			}else if(controlStr.equals("Q")||controlStr.equals("q")) {
 				isControlOkay = true;
 				this.endGame();// quit the game
+			}else{
+				isControlOkay=false;
+				System.out.println("Please input from A/a and Q/q");
 			}
 		}
 
@@ -879,21 +890,21 @@ public class LegendGame extends RPGGame<LegendMap>{
 					System.out.println("Please enter an integer as height(all values under 8 will be set to 8):");
 					widthStr = sc.next();
 				}
-				int wid = Integer.valueOf(widthStr);
+				int wid = Integer.parseInt(widthStr);
 				System.out.println("Now enter the width of each lane(all values under 2 will be set to 2):");
                 String laneWidthStr = sc.next();
                 while(!laneWidthStr.matches("\\d+")) {
                 	System.out.println("Please enter an integer as lane width(all values under 2 will be set to 2):");
                 	laneWidthStr = sc.next();
 				}
-                int laneWidth = Integer.valueOf(laneWidthStr);
+                int laneWidth = Integer.parseInt(laneWidthStr);
                 LegendMap diyMap = new LegendMap(laneWidth,wid,this.heroList);
                 this.setMainMap(diyMap); // set the diy map to main map
                 System.out.println("Great, you have design the size of your Legend Map!");
 			}else if(choice.equals("N")||choice.equals("n")) {
 				isChoiceOkay = true;
 				System.out.println("Alright, Let's apply the default 8x8 Legend Map!");
-				this.setMainMap(new LegendMap()); // apply the default one
+				this.setMainMap(new LegendMap(2,8,this.heroList)); // apply the default one
 			}else {
 				isChoiceOkay = false;
                 System.out.println("Please choose from (Y/N):");
@@ -962,17 +973,27 @@ public class LegendGame extends RPGGame<LegendMap>{
 		this.DIYMobaMap();
 		
 		//show the current map
-		String mapString = this.getMainMap().getCurrentMap().toString();
+		String mapString = this.getMainMap().toString();
 		System.out.println(mapString);
-		
-
+		int roundCount=1;
+		while (!this.isGameEnd){
+			this.MobaGameControl(roundCount);
+			roundCount++;
+		}
+		for(Hero h:heroList){
+			if(h.x==0){
+				System.out.println("Heroes, you are the winner!");
+				return;
+			}
+		}
+		System.out.println("Heroes, you have lost!");
 	}
 
 	@Override
 	public void startGame() {
 		// TODO Auto-generated method stub
 		
-		this.mainLogic();
+		this.mainLogicForMoba();
 		
 	}
 

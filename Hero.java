@@ -17,8 +17,8 @@ public class Hero extends Live implements Cloneable {
 	private boolean isAlivel; // the status to store hero's alive condition
 	private Map<String,Double> attributes; // strength,dexterity and agility
 	private final Map<String,Item> Equipments; // current equipments
-	private List<Item> backpack; // the items hero have
-	private List<Spell> spellBag; // a hero masters some spells
+	private List<Item> backpack=new ArrayList<>(); // the items hero have
+	private List<Spell> spellBag=new ArrayList<>(); // a hero masters some spells
 	private GrowBehavior growBehavior; // the grow behavior of hero
 
 	public int belonging=0;//the very first nexusCell this hero was in
@@ -402,18 +402,18 @@ public class Hero extends Live implements Cloneable {
 		return currentTile;
 	}
 	public UnitPlace eventsWhenNoFight(LegendMap world){//out of a fight, things that can be done by a hero
-		System.out.println(name+ ", now, please press W/w, A/a, S/s, D/d, to go up, left, down or right, press c/C to change equipment, press b/B to check your inventories, press p/P to consume a potion or press i/I to get information about heroes.");
+		System.out.println(name+ ", now, please press W/w, A/a, S/s, D/d, to go up, left, down or right, press c/C to change equipment, press g/G to check your inventories, press p/P to consume a potion, press b/B to go back to home, press t/T to teleport to another lane or press i/I to get information about heroes.");
 		InputChecker checker=new InputChecker();
 		String indicator;
 		indicator = checker.moveChecker(world,this);
-		while (indicator.equals("i")||indicator.equals("I")||indicator.equals("c")||indicator.equals("C")||indicator.equals("b")||indicator.equals("B")||indicator.equals("p")||indicator.equals("P")){
+		while (indicator.equals("i")||indicator.equals("I")||indicator.equals("c")||indicator.equals("C")||indicator.equals("g")||indicator.equals("G")||indicator.equals("p")||indicator.equals("P")){
 			switch (indicator){
 				case "i","I"->System.out.println(world.getHeroList());//get information of all heroes
 				case "c","C"->{//change equipment
 					changeEquipment();
 					return world.getCurrentMap()[x][y];
 				}
-				case "b","B"->{//check bag
+				case "g","G"->{//check bag
 					showBag();
 				}
 				case "p","P"->{//use potion

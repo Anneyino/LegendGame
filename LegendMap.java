@@ -12,6 +12,7 @@ public class LegendMap extends GeneralMap{
 	private int laneWidth; // the width of a lane, default is 2
 	private boolean isMobaMode; // to decide whether the map is moba or not
 	private List<Hero> heroList; // the heroes in moba legend game.
+	private List<Monster> monsterList=new ArrayList<>();
 	private int[][] positionInfo=new int[3][4]; // the hero and monster position in a lane, 3 lanes, 0=hero position, 1=monster position, 2=hero territory(the farthest position), 3=monster territory
 	public LegendMap() {
 		super("LegendMap",8,8);
@@ -154,25 +155,23 @@ public class LegendMap extends GeneralMap{
 			}
 			
 		}
-		
-		// init the first monster while initing the moba map
-		for(int k = 0;k<3;k++) {
-			NexusCell monsterBase = (NexusCell)randomMobaMap[0][k*(this.laneWidth+1)];
-			monsterBase.setHasMonster(true);
-			Monster firstMonster = monsterBase.MonsterGenerate(this.getHeroList().get(k).getLevel()); // generate monster not over that lane's hero level
-			firstMonster.setMark("M"+k);
-			firstMonster.setXpos(0);
-			firstMonster.setYpos(k*(this.laneWidth+1));// set the mark and position of the monster.
-			
-			monsterBase.setMonsterHere(firstMonster); // set the monster on this cell
+		for(int[] intList:positionInfo){
+			intList[0]=randomMobaMap.length-1;
+			intList[1]=0;
+			intList[2]=randomMobaMap.length-1;
+			intList[3]=0;
 		}
-		
+		// init the first monster while initing the moba map
+		monsterList= spawnMonsters(randomMobaMap[0]);
+
 		// init the hero pos for while initing the moba map
 		for(int k = 0;k<3;k++) {
 			NexusCell heroBase = (NexusCell)randomMobaMap[this.getMapWidth()-1][k*(this.laneWidth+1)];
 			heroBase.setHasHero(true);
-			this.getHeroList().get(k).setXpos(this.getMapWidth()-1); 
-			this.getHeroList().get(k).setYpos(k*(this.laneWidth+1));// set the position of the hero
+			this.getHeroList().get(k).x=(this.getMapWidth()-1);
+			this.getHeroList().get(k).y=(k*(this.laneWidth+1));// set the position of the hero
+			this.getHeroList().get(k).laneNo=k;
+			this.getHeroList().get(k).belonging=k;
 			heroBase.setHeroHere(this.getHeroList().get(k));// add the hero in this cell for toString()
 			heroBase.setHeroThisLane(this.getHeroList().get(k)); // bound the hero to this NexusCell for rebirth and Back
 		}
@@ -181,7 +180,23 @@ public class LegendMap extends GeneralMap{
 
 
 	}
-	
+
+	public List<Monster> spawnMonsters(UnitPlace[] unitPlaces) {
+		List<Monster> monsters=new ArrayList<>();
+		for(int k = 0;k<3;k++) {
+			NexusCell monsterBase = (NexusCell) unitPlaces[k*(this.laneWidth+1)];
+			monsterBase.setHasMonster(true);
+			Monster firstMonster = monsterBase.MonsterGenerate(this.getHeroList().get(k).getLevel()); // generate monster not over that lane's hero level
+			firstMonster.setMark("M"+k);
+			firstMonster.laneNo=k;
+			firstMonster.x=0;
+			firstMonster.y=k*(this.laneWidth+1);// set the mark and position of the monster.
+			monsters.add(firstMonster);
+			monsterBase.setMonsterHere(firstMonster); // set the monster on this cell
+		}
+		return monsters;
+	}
+
 	// method to shuffle the unitPlace List
 	public static void exchange(List<UnitPlace> l) {
 		if(l==null||l.isEmpty()) {
@@ -441,6 +456,10 @@ public class LegendMap extends GeneralMap{
 
 	public int[][] getPositionInfo() {
 		return positionInfo;
+	}
+
+	public List<Monster> getMonsterList() {
+		return monsterList;
 	}
 
 	@Override

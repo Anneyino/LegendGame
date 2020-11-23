@@ -11,7 +11,10 @@ public class Round {//a single round in a fight
         this.heroes=heroes;
         this.monsters=monsters;
     }
-    public void aNewRound(LegendMap world){//things happened ina complete round
+    public void addMonsters(List<Monster> monsters){
+        this.monsters.addAll(monsters);
+    }
+    public boolean aNewRound(LegendMap world){//things happened ina complete round
         for(Hero h:heroes){
             boolean finishFlag=false;
             UnitPlace tile=world.getCurrentMap()[h.x][h.y];
@@ -25,86 +28,134 @@ public class Round {//a single round in a fight
                 h.revive(world);
             }
             else{
-                if(!hasEnemy(h,world)){
-                    h.eventsWhenNoFight(world);
-                }
-                else{
-                    Monster m=showCurrentTarget(h,world);
-                    InputChecker checker=new InputChecker();
-                    String indicator;
-                    do{
-                        System.out.println(h.getName()+ ", now, please press W/w, A/a, S/s, D/d, to go up, left, down or right, press c/C to change equipment, press b/B to check your inventories, press p/P to consume a potion, press e/E to attack, press r/R to cast a spell or press i/I to get information about heroes.");
-                        indicator = checker.moveWithEnemyChecker(world,h);
-                        switch (indicator){
-                            case "i","I"->System.out.println(world.getHeroList());//get information of all heroes
-                            case "c","C"->{//change equipment
-                                h.changeEquipment();
-                                finishFlag=true;
-                                //return world.getCurrentMap()[h.x][h.y];
-                            }
-                            case "g","G"->//check bag
-                                    h.showBag();
-                            case "p","P"->{//use potion
-                                h.consumePotion();
-                                finishFlag=true;
-                                //return world.getCurrentMap()[x][y];
-                            }
-                            case "e", "E"->{
-                                heroAttack(h, m);
-                                finishFlag=true;
-                            }
-                            case "r", "R"->{
-                                castASpell(h, checker, m);
-                                finishFlag=true;
-                            }
-                            case "b", "B"->{
-                                tile=world.getCurrentMap()[h.x][h.y];
-                                tile.setHasHero(false);
-                                h.x=world.getMapWidth()-1;
-                                h.y=h.belonging*world.getLaneWidth();
-                                tile=world.getCurrentMap()[h.x][h.y];
-                                tile.setHasHero(true);
-                                tile.setHeroHere(h);
-                                finishFlag=true;
-                            }
-                            case "t", "T"->{
-                                System.out.println("which lane do you want to teleport to?");
-                                h.laneNo=Integer.parseInt(checker.numberChecker(3))-1;
-                                tile=world.getCurrentMap()[h.x][h.y];
-                                tile.setHasHero(false);
-                                int[] laneInfo=world.getPositionInfo()[h.laneNo];
-                                h.x=max(laneInfo[2],laneInfo[3]);
-                                h.y=h.laneNo*world.getLaneWidth();
-                                tile=world.getCurrentMap()[h.x][h.y];
-                                tile.setHasHero(true);
-                                tile.setHeroHere(h);
-                                finishFlag=true;
-                            }
-                            default -> {
-                                tile=world.getCurrentMap()[h.x][h.y];
-                                removeBuff(h, tile);
+                Monster m=showCurrentTarget(h,world);
+                InputChecker checker=new InputChecker();
+                String indicator;
+                do{
+                    System.out.println(h.getName()+ ", now, please press W/w, A/a, S/s, D/d, to go up, left, down or right, press c/C to change equipment, press g/G to check your inventories, press p/P to consume a potion, press e/E to attack, press r/R to cast a spell, press b/B to go back to home, press t/T to teleport to another lane or press i/I to get information about heroes.");
+                    indicator = !hasEnemy(h,world)? checker.moveChecker(world,h):checker.moveWithEnemyChecker(world,h);
+                    switch (indicator){
+                        case "i","I"->System.out.println(world.getHeroList());//get information of all heroes
+                        case "c","C"->{//change equipment
+                            finishFlag=(h.changeEquipment()==1);
 
-                                h.move(world, indicator);
+                            //return world.getCurrentMap()[h.x][h.y];
+                        }
+                        case "g","G"->{
+                            System.out.println(h.getName()+"'s Item");
+                            System.out.println("No.          Name                Sold Price");
+                            System.out.println("--------------------------------------------------");
+                            int itemNo = 1;
+                            for(Item it : h.getBackpack()) {
+                                System.out.printf("%-13d", itemNo);
+                                System.out.printf("%-20s", it.getName());
+                                System.out.printf("%-10d", new Double(it.getPrice()/2.0).intValue());
+                                itemNo += 1;
+                                System.out.println("");
 
-                                tile=world.getCurrentMap()[h.x][h.y];
-                                switch (tile.getType()){
-                                    case "KoulouCell"-> ((KoulouCell)tile).addBuff(h);
-                                    case "CaveCell"-> ((CaveCell)tile).addBuff(h);
-                                    case "BlushCell"-> ((BlushCell)tile).addBuff(h);
-                                }
-                                finishFlag=true;
                             }
+                            System.out.println("");
+
+                        }
+                        case "p","P"->{//use potion
+                            finishFlag=h.consumePotion()==1;
+
+                            //return world.getCurrentMap()[x][y];
+                        }
+                        case "e", "E"->{
+                            heroAttack(h, m,world);
+                            finishFlag=true;
+                        }
+                        case "r", "R"->{
+                            finishFlag=castASpell(h, checker, m,world)==1;
+
+                        }
+                        case "b", "B"->{
+                            tile=world.getCurrentMap()[h.x][h.y];
+                            tile.setHasHero(false);
+                            h.x=world.getMapWidth()-1;
+                            h.y=h.belonging*(world.getLaneWidth()+1);
+                            tile=world.getCurrentMap()[h.x][h.y];
+                            tile.setHasHero(true);
+                            tile.setHeroHere(h);
+                            finishFlag=true;
+                        }
+                        case "t", "T"->{
+                            System.out.println("which lane do you want to teleport to?");
+                            int tempLaneNo=h.laneNo;
+                            h.laneNo=Integer.parseInt(checker.numberChecker(3))-1;
+                            tile=world.getCurrentMap()[h.x][h.y];
+                            tile.setHasHero(false);
+                            int[] laneInfo=world.getPositionInfo()[h.laneNo];
+                            int tempX=max(laneInfo[2],laneInfo[0]);
+                            int tempY=h.laneNo*(world.getLaneWidth()+1);
+                            if(world.getCurrentMap()[tempX][tempY].getHasHero()){
+                                tempY++;
+                            }
+                            if(world.getCurrentMap()[tempX][tempY].getHasHero()){
+                                tempX++;
+                                tempY--;
+                            }
+                            if(tempX>=world.getCurrentMap().length){
+                                System.out.println("No place for you, you need to go forward for more space!");
+                                tile.setHasHero(true);
+                                h.laneNo=tempLaneNo;
+                                finishFlag=true;
+                                continue;
+                            }
+                            h.x=tempX;
+                            h.y=tempY;
+                            tile=world.getCurrentMap()[h.x][h.y];
+                            tile.setHasHero(true);
+                            tile.setHeroHere(h);
+                            world.getPositionInfo()[h.laneNo][0]=min(world.getPositionInfo()[h.laneNo][0],h.x);
+                            finishFlag=true;
+                        }
+                        default -> {
+                            tile=world.getCurrentMap()[h.x][h.y];
+                            removeBuff(h, tile);
+
+                            h.move(world, indicator);
+                            if(h.x==0){
+                                return true;
+                            }
+
+                            tile=world.getCurrentMap()[h.x][h.y];
+                            switch (tile.getType()){
+                                case "KoulouCell"-> ((KoulouCell)tile).addBuff(h);
+                                case "CaveCell"-> ((CaveCell)tile).addBuff(h);
+                                case "BlushCell"-> ((BlushCell)tile).addBuff(h);
+                            }
+                            finishFlag=true;
                         }
                     }
-                    while (!finishFlag);
-                    return;
                 }
+                while (!finishFlag);
             }
+            System.out.println(world);
         }
         for(Monster m:monsters){
             if(hasEnemy(m,world)){
                 monsterAttack(m,world);
             }
+            else {
+                if(world.getCurrentMap()[m.x+1][m.y].getHasMonster()){
+                    continue;
+                }
+                UnitPlace originalTile = world.getCurrentMap()[m.x][m.y];
+                originalTile.setHasMonster(false);
+
+                m.x++;
+                UnitPlace currentTile= world.getCurrentMap()[m.x][m.y];
+                currentTile.setMonsterHere(m);
+                currentTile.setHasMonster(true);
+                world.setMonsterMove(m.laneNo);
+
+                if(m.x==world.getCurrentMap().length-1){
+                    return true;
+                }
+            }
+            System.out.println(world);
         }
         for(Hero h:heroes){
             UnitPlace tile=world.getCurrentMap()[h.x][h.y];
@@ -112,6 +163,7 @@ public class Round {//a single round in a fight
         }
 
         endingOfARound();
+        return false;
     }
 
     private void removeBuff(Hero h, UnitPlace tile) {
@@ -123,24 +175,37 @@ public class Round {//a single round in a fight
     }
 
     private Monster showCurrentTarget(Hero h, LegendMap world) {
-        for(int i=0;i<world.getLaneWidth()-1;i++){
-            UnitPlace tile=world.getCurrentMap()[h.x][h.laneNo*world.getLaneWidth()+i];
+        for(int i=0;i<world.getLaneWidth();i++){
+            UnitPlace tile=world.getCurrentMap()[h.x][h.laneNo*(world.getLaneWidth()+1)+i];
             if(tile.getHasMonster()){
                 System.out.println(h.getName()+", your current target is "+tile.getMonsterHere().getName());
                 return tile.getMonsterHere();
             }
         }
-        System.out.println("Error! No monster nearby.");
+        for(int i=0;i<world.getLaneWidth();i++){
+            UnitPlace tile=world.getCurrentMap()[h.x-1][h.laneNo*(world.getLaneWidth()+1)+i];
+            if(tile.getHasMonster()){
+                System.out.println(h.getName()+", your current target is "+tile.getMonsterHere().getName());
+                return tile.getMonsterHere();
+            }
+        }
+        //System.out.println("Error! No monster nearby.");
         return monsters.get(0);
     }
     private Hero showCurrentTarget(Monster h, LegendMap world) {
-        for(int i=0;i<world.getLaneWidth()-1;i++){
-            UnitPlace tile=world.getCurrentMap()[h.x][h.laneNo*world.getLaneWidth()+i];
+        for(int i=0;i<world.getLaneWidth();i++){
+            UnitPlace tile=world.getCurrentMap()[h.x][h.laneNo*(world.getLaneWidth()+1)+i];
             if(tile.getHasHero()){
                 return tile.getHeroHere();
             }
         }
-        System.out.println("Error! No hero nearby.");
+        for(int i=0;i<world.getLaneWidth();i++){
+            UnitPlace tile=world.getCurrentMap()[h.x+1][h.laneNo*(world.getLaneWidth()+1)+i];
+            if(tile.getHasHero()){
+                return tile.getHeroHere();
+            }
+        }
+        //System.out.println("Error! No hero nearby.");
         return heroes.get(0);
     }
 
@@ -164,25 +229,46 @@ public class Round {//a single round in a fight
             h.setHp(h.getHp()-hurt);
             if (h.isDead()){
                 System.out.println(LegendGame.ANSI_RED+"You are knocked out now."+LegendGame.ANSI_RESET);
+                h.setMoney(h.getMoney()/2.0);
+                world.getPositionInfo()[m.laneNo][0]=world.getCurrentMap().length-1;
+                for(Hero hero:heroes){
+                    if(hero.getHp()>0&&hero.laneNo==m.laneNo){
+                        world.getPositionInfo()[m.laneNo][0]=min(world.getPositionInfo()[m.laneNo][0],hero.x);
+                    }
+                }
             }
             else {
-                System.out.println(LegendGame.ANSI_YELLOW+"You now have "+h.getHp()+" hp."+LegendGame.ANSI_RESET);
+                System.out.println(LegendGame.ANSI_YELLOW+"You now have "+(int)h.getHp()+" hp."+LegendGame.ANSI_RESET);
             }
         }
     }
 
-    private void castASpell(Hero h, InputChecker inputChecker, Monster m) {//the procedure of a hero cast a spell towards a monster
+    private int castASpell(Hero h, InputChecker inputChecker, Monster m,LegendMap world) {//the procedure of a hero cast a spell towards a monster
         if(h.getSpellBag().isEmpty()){
             System.out.println("You have learnt no spells!");
+            return 0;
         }
         else {
-            System.out.println("You have learnt following spells.\n" +
-                    h.getSpellBag().toString()+"\nPlease choose which one to cast.");
+            System.out.println("You have learnt following spells. Please choose which one to cast.");
+            System.out.println(h.getName()+"'s Spell");
+            System.out.println("No.          Name                Type             Damage");
+            System.out.println("---------------------------------------------------------------");
+            int spellNo = 1;
+            for(Spell spell : h.getSpellBag()) {
+                System.out.printf("%-13d", spellNo);
+                System.out.printf("%-20s", spell.getName());
+                System.out.printf("%-17s", spell.getType());
+                System.out.printf("%-9d", new Double(spell.getDamage()).intValue());
+                spellNo += 1;
+                System.out.println("");
+            }
+            System.out.println("");
+
             int whichSpell=Integer.parseInt(inputChecker.numberChecker(h.getSpellBag().size()));
             Spell spell= h.getSpellBag().get(whichSpell-1);
             if(h.getMana()<spell.getManaCost()){
                 System.out.println("You don't have enough mana for this spell!");
-                return;
+                return 0;
             }
 
             if(new Random().nextInt(100)<= m.getDodgeRate()){
@@ -208,16 +294,17 @@ public class Round {//a single round in a fight
                 }
                 System.out.println(LegendGame.ANSI_YELLOW+ h.getName()+", you have dealt "+hurt+" damage to the monster."+LegendGame.ANSI_RESET);
                 if(m.getHp()==0){
-                    System.out.println("The monster is dead.");
+                    afterWin(h, m, world);
                 }
                 else {
                     System.out.println("The monster now have "+ m.getHp()+" hp.");
                 }
             }
+            return 1;
         }
     }
 
-    private void heroAttack(Hero h, Monster m) {//the procedure of a hero attacking a monster
+    private void heroAttack(Hero h, Monster m,LegendMap world) {//the procedure of a hero attacking a monster
         if(new Random().nextInt(100)<= m.getDodgeRate()){
             System.out.println(LegendGame.ANSI_YELLOW+ h.getName()+", you have missed. The monster now have "+ m.getHp()+" hp."+LegendGame.ANSI_RESET);
         }
@@ -227,7 +314,7 @@ public class Round {//a single round in a fight
             m.setHp(m.getHp()-hurt);
             System.out.println(LegendGame.ANSI_YELLOW+ h.getName()+", you have dealt "+hurt+" damage to the monster."+LegendGame.ANSI_RESET);
             if(m.getHp()==0){
-                System.out.println("The monster is dead.");
+                afterWin(h, m, world);
             }
             else {
                 System.out.println("The monster now have "+ m.getHp()+" hp.");
@@ -235,9 +322,25 @@ public class Round {//a single round in a fight
         }
     }
 
+    private void afterWin(Hero h, Monster m, LegendMap world) {
+        System.out.println("The monster is dead.");
+        world.getCurrentMap()[m.x][m.y].setHasMonster(false);
+        h.incMoney(m.getBonusMoney());
+        h.incExp(m.getBonusExp());
+        while (h.IsLevelUp()){
+            h.LevelUp();}
+        world.getPositionInfo()[m.laneNo][1]=0;
+        for(Monster monster:monsters){
+            if(monster.getHp()>0&&monster.laneNo==h.laneNo){
+                world.getPositionInfo()[h.laneNo][0]=max(world.getPositionInfo()[m.laneNo][0],monster.x);
+            }
+        }
+        monsters.remove(m);
+    }
+
     private boolean hasEnemy(Hero h, LegendMap world){
-        for(int i=0;i<world.getLaneWidth()-1;i++){
-            UnitPlace tile=world.getCurrentMap()[h.x][h.laneNo*world.getLaneWidth()+i];
+        for(int i=0;i<world.getLaneWidth();i++){
+            UnitPlace tile=world.getCurrentMap()[h.x][h.laneNo*(world.getLaneWidth()+1)+i];
             if(tile.getHasMonster()){
                 return true;
             }
@@ -245,8 +348,8 @@ public class Round {//a single round in a fight
         return false;
     }
     private boolean hasEnemy(Monster h, LegendMap world){
-        for(int i=0;i<world.getLaneWidth()-1;i++){
-            UnitPlace tile=world.getCurrentMap()[h.x][h.laneNo*world.getLaneWidth()+i];
+        for(int i=0;i<world.getLaneWidth();i++){
+            UnitPlace tile=world.getCurrentMap()[h.x][h.laneNo*(world.getLaneWidth()+1)+i];
             if(tile.getHasHero()){
                 return true;
             }
@@ -285,12 +388,12 @@ public class Round {//a single round in a fight
                         case "2"->{
                             market.showSpells();
                             System.out.println("You have " + hero.getMoney() + " money.");
-                            int indexToBuy = Integer.parseInt(inputChecker.numberChecker(market.getSpellMap().size()));
+                            int indexToBuy = Integer.parseInt(inputChecker.numberChecker(market.generalItemMap.size(),market.generalItemMap.size()+market.getSpellMap().size()));
                             market.PurchaseSpells(hero,indexToBuy);
                         }
                     }
             }
-            System.out.println("Do you want to buy or sell more things?");
+            System.out.println("Operated successfully. Do you want to buy or sell more things?");
             order=inputChecker.marketChecker();
         }
         System.out.println("Thanks for your patronage.");

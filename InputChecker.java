@@ -31,6 +31,26 @@ public class InputChecker {//check input for different use, in all of them, q/Q 
         }
         return indicator;
     }
+    public String numberChecker(int lowerLimit,int upperLimit) {//check if this is a number no less than the lowerLimit and no bigger than the upperLimit
+        Scanner sc=new Scanner(System.in);
+        String indicator;
+        try{
+            indicator = sc.next();
+            if(indicator.equals("Q")||indicator.equals("q")){
+                System.out.println("You have quit the game.");
+                System.exit(0);
+            }
+            int i=Integer.parseInt(indicator);
+            if (i>upperLimit||i<lowerLimit){
+                throw new Exception();
+            }
+        }
+        catch (Exception e){
+            System.out.println(LegendGame.ANSI_RED+ "Please input a number no less than " +lowerLimit+ " and no bigger than "+upperLimit+"."+LegendGame.ANSI_RESET);
+            indicator=numberChecker(upperLimit);
+        }
+        return indicator;
+    }
     public String moveChecker(LegendMap world,Hero hero){//check if this input is a valid order for hero out of a fight, and check if this move is valid when the order is moving the hero
         Scanner sc=new Scanner(System.in);
         String indicator;
@@ -40,11 +60,11 @@ public class InputChecker {//check input for different use, in all of them, q/Q 
                 System.out.println("You have quit the game.");
                 System.exit(0);
             }
-            if(indicator.equals("c")||indicator.equals("C")||indicator.equals("b")||indicator.equals("B")||indicator.equals("p")||indicator.equals("P")){
+            if(indicator.equals("c")||indicator.equals("C")||indicator.equals("b")||indicator.equals("B")||indicator.equals("g")||indicator.equals("G")||indicator.equals("t")||indicator.equals("T")||indicator.equals("p")||indicator.equals("P")){
                 return indicator;
             }
             if (!indicator.equals("w") && !indicator.equals("W") && !indicator.equals("a") && !indicator.equals("A") && !indicator.equals("s") && !indicator.equals("S") && !indicator.equals("d") && !indicator.equals("D") && !indicator.equals("i") && !indicator.equals("I")){
-                System.out.println("Please only enter w/W/a/A/s/S/d/D to move the hero, i/I to get information about the heroes, press b/B to check your inventories, press p/P to consume a potion or c/C to change your equipment.");
+                System.out.println("Please only press W/w, A/a, S/s, D/d, to go up, left, down or right, press c/C to change equipment, press g/G to check your inventories, press p/P to consume a potion, press b/B to go back to home, press t/T to teleport to another lane or press i/I to get information about heroes.");
                 throw new Exception();
             }
             if(((indicator.equals("w")||indicator.equals("W"))&&hero.x==0)||((indicator.equals("a")||indicator.equals("A"))&&hero.y==0)||((indicator.equals("s")||indicator.equals("S"))&&hero.x==world.getCurrentMap().length-1)||((indicator.equals("d")||indicator.equals("D"))&&hero.y==world.getCurrentMap()[0].length-1)){
@@ -178,7 +198,7 @@ public class InputChecker {//check input for different use, in all of them, q/Q 
                 return indicator;
             }
             if (!indicator.equals("w") && !indicator.equals("W") && !indicator.equals("a") && !indicator.equals("A") && !indicator.equals("s") && !indicator.equals("S") && !indicator.equals("d") && !indicator.equals("D") && !indicator.equals("i") && !indicator.equals("I")){
-                System.out.println("Please only enter w/W/a/A/s/S/d/D to move the hero, i/I to get information about the heroes, press b/B to check your inventories, press p/P to consume a potion or c/C to change your equipment.");
+                System.out.println("Please only press W/w, A/a, S/s, D/d, to go up, left, down or right, press c/C to change equipment, press g/G to check your inventories, press p/P to consume a potion, press e/E to attack, press r/R to cast a spell, press b/B to go back to home, press t/T to teleport to another lane or press i/I to get information about heroes.");
                 throw new Exception();
             }
             if(((indicator.equals("w")||indicator.equals("W"))&&hero.x==0)||((indicator.equals("a")||indicator.equals("A"))&&hero.y==0)||((indicator.equals("s")||indicator.equals("S"))&&hero.x==world.getCurrentMap().length-1)||((indicator.equals("d")||indicator.equals("D"))&&hero.y==world.getCurrentMap()[0].length-1)){
@@ -227,7 +247,7 @@ public class InputChecker {//check input for different use, in all of them, q/Q 
             }
         }
         catch (Exception e){
-            indicator=moveChecker(world,hero);
+            indicator=moveWithEnemyChecker(world,hero);
         }
         return indicator;
     }
