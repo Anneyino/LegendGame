@@ -163,3 +163,18 @@ This class represents living creatures which is the super class of Hero and Mons
 
 Class InputChecker:
 encapsulate the input checking work to a class, use different method for different input, increase the code reuse rate.
+
+Class NexusCell:
+This class extends class Market and represents the base of the heroes and monsters.
+
+Class BlushCell:
+This class extends class UnitPlace and give a specified buff the hero on it.
+
+Class CaveCell:
+This class extends class UnitPlace and give a specified buff the hero on it.
+
+Class KoulouCell:
+This class extends class UnitPlace and give a specified buff the hero on it.
+
+Class PlainCell:
+This class extends class UnitPlace and has no buff on hero.
