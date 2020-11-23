@@ -160,3 +160,6 @@ in turn. After all heroes and monsters make movements, the round ends.
 
 Class Live:
 This class represents living creatures which is the super class of Hero and Monster. 
+
+Class InputChecker:
+encapsulate the input checking work to a class, use different method for different input, increase the code reuse rate.
