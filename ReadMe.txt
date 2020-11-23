@@ -1,31 +1,37 @@
-Since the project is encapsulated in package LegendGames
-To run this project you should put the java files in a folder named LegendGames(For example, C:\Users\11327\Desktop\test\LegendGames)
+Group members:
+Jiatong Yin, Boyi Song
 
-Compilation: javac \yourpath\LegendGames\*.java
-Execution: you need to return to parent folder of LegendGames and run java LegendGames.Maingame
+The evaluation of the implementation and reason why we choose this implementation are presented in the Evaluation.txt
+
+Compilation: javac \yourpath\*.java
+Execution: java Maingame
 
 Procedures of  the game:
 
-Firstly, you are allowed to set the map of the Legend Game, but the minimum size is 8X8.
+Firstly you must select 3 heroes from the hero shop.
 
-Then you can select 1-3 heroes from the hero shop.
+Then, you are allowed to set the map of the Legend Game, but the minimum size is 8X8. You can set the width of the lane and the 
+height of the map by yourself.
 
 Now the game started.
 
-Generally the heroes will be initialized at 0,0 position in the map(Left upper corner). But if the heroes are blocked by inaccessible cells,
-you are allowed to reset the position of the heroes.
+The heroes will be initialized at their Nexus Cell in the map.
 
 when not on a fight with monsters, heroes can choose to move or check their inventory and status, they can change their equipment as well.
-if heroes enter a market they can choose to buy something(regular items or spells), heroes can buy anything if they have enough money, but 
-some items have unlock levels, so even if you buy something, it is possible that the heroes can't use it.
+if heroes are on their Nexus Cell they can choose to buy something(regular items or spells), heroes can buy some items if they have enough money, but 
+the level limit of some items may stop heroes to buy them. 
+
  
 when on a fight with monsters, heroes can equip, attack, cast and use some potions, they can also check the battle info of status of them and monsters.
+The fight can happen when heroes and monsters encounter(in the same cell or their cells are adjacent).
 
-if heroes win the fight, all alive hero can gain money and exp, but the dead hero will gain nothing, after the fight, dead heroes recover half their health power.
-if heroes lose the fight, they will lose half the money.
+if heroes win the fight, all alive hero can gain money and exp, but the dead hero will gain nothing. In next round, dead heroes recover their health power 
+and will be reborn at their Nexus Cell.
 
-the monster heroes encounter are randomly generated, but for the balance, the heroes won't encounter monsters that have levels surpass their levels by 2. 
-So if your hero is Lv1, you won't fight a monster that is Lv4 or higher level.
+The victory condition of the game is which side reaches the rivals' Nexus Cell first.
+If any hero reaches any monsters' Nexus Cell, then hero team win. 
+If any monster reaches any heroes' Nexus Cell, then monster team win.
+Also, the game can end at the beginning of each round when player enter Q/q to quit the game.
 
 
 
@@ -148,3 +154,9 @@ This class extends Hero and represents a specific type of hero, Warrior, which a
 Class Weapon:
 This class extends Item and represents a specific type of Item, Weapon, which increase the damage of heroes.
 
+Class Round:
+This class represents a round in the three-lane based Legend game. In each round heroes make movement in turn, then monsters make movement 
+in turn. After all heroes and monsters make movements, the round ends.
+
+Class Live:
+This class represents living creatures which is the super class of Hero and Monster. 
